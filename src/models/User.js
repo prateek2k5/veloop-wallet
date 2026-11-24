@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       select: false
     },
 
-    role: {
+    accountStatus: {\n      type: String,\n      enum: ["active", "suspended", "blocked"],\n      default: "active",\n      index: true\n    },\n\n    role: {
       type: String,
       enum: ["user", "admin"],
       default: "user"
