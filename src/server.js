@@ -11,8 +11,16 @@ const withdrawalRoutes = require("./routes/withdrawalRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")\n  .split(",")\n  .map((origin) => origin.trim());\napp.use(cors({ origin: (origin, callback) => {\n  if (!origin || allowedOrigins.includes(origin)) return callback(null, true);\n  return callback(new Error("Origin is not allowed by CORS."));\n} }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("Origin is not allowed by CORS."));
+  },
+}));
 app.use(express.json({ limit: "20kb" }));
 
 app.use("/api/auth", authRoutes);
