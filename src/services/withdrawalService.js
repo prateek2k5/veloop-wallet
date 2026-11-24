@@ -128,7 +128,12 @@ async function createWithdrawal({ user, optionId, payoutDetails, idempotencyKey 
   } catch (error) {
     if (error.code === 11000) {
       const duplicate = await Withdrawal.findOne({ userId: user._id, idempotencyKey });
-      if (duplicate) {\n        if (duplicate.requestHash !== requestHash) throw httpError("Idempotency key was already used with a different request.", 409);\n        return { withdrawal: duplicate, duplicate: true };\n      }
+      if (duplicate) {
+        if (duplicate.requestHash !== requestHash) {
+          throw httpError("Idempotency key was already used with a different request.", 409);
+        }
+        return { withdrawal: duplicate, duplicate: true };
+      }
       throw httpError("This withdrawal request has already been submitted.", 409);
     }
     throw error;
