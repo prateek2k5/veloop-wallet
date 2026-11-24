@@ -30,9 +30,14 @@ async function seedDemoData() {
 
   if (await WalletTransaction.countDocuments({ userId: user._id }) === 0) {
     const rows = [
-      ["DEMO-AD-001", "VES", "CREDIT", 500, 24500, 25000, "AD_REWARD", "Watch Ad Reward"],
+      ["DEMO-OPEN-VES", "VES", "CREDIT", 24400, 0, 24400, "ADMIN_CREDIT", "Demo opening VEs balance"],
       ["DEMO-DAILY-001", "VES", "CREDIT", 100, 24400, 24500, "DAILY_REWARD", "Daily Reward"],
+      ["DEMO-AD-001", "VES", "CREDIT", 500, 24500, 25000, "AD_REWARD", "Watch Ad Reward"],
+      ["DEMO-OPEN-SVES", "SVES", "CREDIT", 5000, 0, 5000, "ADMIN_CREDIT", "Demo opening SVEs balance"],
+      ["DEMO-OPEN-GEMS", "GEMS", "CREDIT", 80, 0, 80, "ADMIN_CREDIT", "Demo opening Gems balance"],
       ["DEMO-REF-001", "GEMS", "CREDIT", 20, 80, 100, "REFERRAL", "Referral Reward"],
+      ["DEMO-OPEN-TOKENS", "TOKENS", "CREDIT", 500, 0, 500, "ADMIN_CREDIT", "Demo opening Tokens balance"],
+      ["DEMO-OPEN-SPINS", "SPINS", "CREDIT", 3, 0, 3, "ADMIN_CREDIT", "Demo opening Spins balance"],
     ];
     await WalletTransaction.insertMany(rows.map(([transactionId,currency,type,amount,balanceBefore,balanceAfter,source,description]) => ({
       transactionId, userId: user._id, currency, type, amount, balanceBefore, balanceAfter, source, description,
