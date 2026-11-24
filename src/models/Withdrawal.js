@@ -29,6 +29,7 @@ const withdrawalSchema = new mongoose.Schema(
     reviewNote: { type: String, default: null, maxlength: 1000 },
     transactionId: { type: String, default: null, index: true },
     idempotencyKey: { type: String, required: true },
+    requestHash: { type: String, required: true },
     requestedAt: { type: Date, default: Date.now },
     processedAt: { type: Date, default: null },
   },
