@@ -21,13 +21,13 @@ const DEBIT_SOURCES = [
 
 function validateAmount(amount) {
   if (!Number.isSafeInteger(amount) || amount <= 0) {
-    throw new Error("Amount must be a positive whole number.");
+    throw Object.assign(new Error("Amount must be a positive whole number."), { statusCode: 400 });
   }
 }
 
 function getCurrencyField(currency) {
   const field = CURRENCY_FIELDS[String(currency || "").toUpperCase()];
-  if (!field) throw new Error("Unsupported wallet currency.");
+  if (!field) throw Object.assign(new Error("Unsupported wallet currency."), { statusCode: 400 });
   return field;
 }
 
@@ -50,10 +50,10 @@ async function changeBalance({ userId, currency, amount, type, source, descripti
   const allowedSources = normalizedType === "CREDIT" ? CREDIT_SOURCES : DEBIT_SOURCES;
 
   if (!["CREDIT", "DEBIT"].includes(normalizedType)) {
-    throw new Error("Invalid transaction type.");
+    throw Object.assign(new Error("Invalid transaction type."), { statusCode: 400 });
   }
   if (!allowedSources.includes(source)) {
-    throw new Error("Invalid transaction source for this operation.");
+    throw Object.assign(new Error("Invalid transaction source for this operation."), { statusCode: 400 });
   }
 
   await ensureWallet(userId);
@@ -143,6 +143,8 @@ async function getTransactions(userId, page = 1, limit = 20) {
 
 module.exports = {
   CURRENCY_FIELDS,
+  validateAmount,
+  getCurrencyField,
   getWallet,
   getTransactions,
   creditWallet,
