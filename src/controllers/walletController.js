@@ -1,5 +1,4 @@
 const walletService = require("../services/walletService");
-const AuditLog = require("../models/AuditLog");
 
 exports.getWallet = async (req, res, next) => {
   try {
@@ -28,22 +27,13 @@ exports.getSummary = async (req, res, next) => {
 async function mutateWallet(req, res, next, operation) {
   try {
     const { currency, amount, source, description, referenceId } = req.body;
-    const input = { userId: req.body.userId, currency, amount, source, description, referenceId };
+    const input = { userId: req.body.userId, currency, amount, source, description, referenceId, actorId: req.user._id };
     if (!input.userId) {
       const error = new Error("Target userId is required for internal wallet operations.");
       error.statusCode = 400;
       throw error;
     }
     const result = await operation(input);
-    await AuditLog.create({
-      actorId: req.user._id,
-      targetUserId: input.userId,
-      action: operation === walletService.creditWallet ? "WALLET_CREDIT" : "WALLET_DEBIT",
-      targetType: "Wallet",
-      referenceId: result.transaction.transactionId,
-      metadata: { currency, amount, source, description },
-      ipAddress: req.ip,
-    });
     res.status(200).json({ success: true, ...result });
   } catch (error) { next(error); }
 }
