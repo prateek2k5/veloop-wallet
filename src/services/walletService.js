@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { randomUUID } = require("crypto");
 const Wallet = require("../models/Wallet");
 const WalletTransaction = require("../models/WalletTransaction");
+const AuditLog = require("../models/AuditLog");
 
 const CURRENCY_FIELDS = {
   VES: "ves",
@@ -43,7 +44,7 @@ async function getWallet(userId) {
   return ensureWallet(userId);
 }
 
-async function changeBalance({ userId, currency, amount, type, source, description = "", referenceId = null, metadata = {} }) {
+async function changeBalance({ userId, currency, amount, type, source, description = "", referenceId = null, metadata = {}, actorId = null }) {
   validateAmount(amount);
   const field = getCurrencyField(currency);
   const normalizedType = String(type || "").toUpperCase();
@@ -100,6 +101,17 @@ async function changeBalance({ userId, currency, amount, type, source, descripti
         description,
         metadata,
       }], { session });
+
+      if (actorId) {
+        await AuditLog.create([{
+          actorId,
+          targetUserId: userId,
+          action: normalizedType === "CREDIT" ? "WALLET_CREDIT" : "WALLET_DEBIT",
+          targetType: "Wallet",
+          referenceId: transaction.transactionId,
+          metadata: { currency, amount, source, description },
+        }], { session });
+      }
 
       result = { wallet: { ...wallet.toObject(), [field]: balanceAfter }, transaction };
     });
