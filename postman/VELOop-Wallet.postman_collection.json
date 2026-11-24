@@ -8,6 +8,7 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:5000" },
     { "key": "token", "value": "" },
+    { "key": "demoPassword", "value": "" },
     { "key": "optionId", "value": "upi_100" },
     { "key": "withdrawalId", "value": "" },
     { "key": "idempotencyKey", "value": "demo-withdrawal-001" },
