@@ -9,27 +9,18 @@ const METHOD_NAMES = {
 
 async function getPayoutMethods() {
   const options = await PayoutOption.find({ active: true }).sort({ method: 1, payoutAmount: 1 }).lean();
-  const grouped = new Map();
-
-  for (const option of options) {
-    if (!grouped.has(option.method)) {
-      grouped.set(option.method, {
-        method: option.method,
-        name: METHOD_NAMES[option.method] || option.method,
-        options: [],
-      });
-    }
-    grouped.get(option.method).options.push({
+  return Object.entries(METHOD_NAMES).map(([method, name]) => ({
+    method,
+    name,
+    options: options.filter((option) => option.method === method).map((option) => ({
       optionId: option.optionId,
       name: option.name,
       payoutAmount: option.payoutAmount,
       currency: option.currency,
       requiredAmount: option.requiredAmount,
       requiredDetails: option.requiredDetails,
-    });
-  }
-
-  return Array.from(grouped.values());
+    })),
+  }));
 }
 
 async function getOptionsByMethod(method) {
