@@ -6,10 +6,10 @@ function notFound(req, res) {
 }
 
 function errorHandler(error, req, res, next) {
-  const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  const statusCode = error.statusCode || 500;
   res.status(statusCode).json({
     success: false,
-    message: statusCode === 500 ? "Internal server error." : error.message,
+    message: statusCode >= 500 ? "Internal server error." : error.message,
   });
 }
 
