@@ -85,4 +85,4 @@ Run `npm test`. The project is being built in milestones; API integration tests 
 - Add operational reconciliation with payout providers and alert on mismatches.
 
 ## Project status
-Backend APIs and the React demonstration frontend are implemented on the `feature/wallet-foundation` branch. CI currently runs backend unit tests and a frontend production build. MongoDB-backed withdrawal/concurrency integration tests, deployment and end-to-end verification against your Atlas database are still pending.
+Backend APIs and the React demonstration frontend are implemented on the `feature/wallet-foundation` branch. CI runs backend JavaScript syntax checks, backend unit tests, and a frontend production build. MongoDB-backed withdrawal/concurrency integration tests, deployment and end-to-end verification against your Atlas database are still pending.
