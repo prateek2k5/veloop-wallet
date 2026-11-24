@@ -6,7 +6,7 @@ A backend-focused MERN demonstration of a server-authoritative rewards wallet, l
 - Node.js and Express
 - MongoDB and Mongoose
 - JWT authentication
-- React demonstration frontend (planned in the next milestone)
+- React demonstration frontend (Vite) with `/wallet` and `/payout` routes
 
 ## Current backend capabilities
 - Signup/login with bcrypt password hashing and JWT.
@@ -85,4 +85,4 @@ Run `npm test`. The project is being built in milestones; API integration tests 
 - Add operational reconciliation with payout providers and alert on mismatches.
 
 ## Project status
-Backend foundation and primary wallet/payout workflows are under implementation on the `feature/wallet-foundation` branch. Runtime integration testing, React demonstration frontend, deployment and final verification are still pending.
+Backend APIs and the React demonstration frontend are implemented on the `feature/wallet-foundation` branch. CI currently runs backend unit tests and a frontend production build. MongoDB-backed withdrawal/concurrency integration tests, deployment and end-to-end verification against your Atlas database are still pending.
