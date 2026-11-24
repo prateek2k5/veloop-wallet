@@ -14,9 +14,7 @@ exports.create = async (req, res, next) => {
       duplicate: result.duplicate,
       withdrawal: result.withdrawal,
     });
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 };
 
 exports.listMine = async (req, res, next) => {
