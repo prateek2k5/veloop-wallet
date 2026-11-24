@@ -154,6 +154,7 @@ function Payout({ token, onDone }) {
   const [upiId, setUpiId] = useState("");
   const [email, setEmail] = useState("");
   const [confirm, setConfirm] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [busy, setBusy] = useState(false);
@@ -182,7 +183,7 @@ function Payout({ token, onDone }) {
     try {
       const data = await api("/api/withdrawals", token, {
         method: "POST",
-        headers: { "Idempotency-Key": crypto.randomUUID() },
+        headers: { "Idempotency-Key": idempotencyKey },
         body: JSON.stringify({ optionId, payoutDetails }),
       });
       setSuccess(`Withdrawal submitted. Status: ${data.withdrawal.status}`);
@@ -203,7 +204,7 @@ function Payout({ token, onDone }) {
       {selected?.requiredDetails.includes("upiId") && <label>UPI ID<input value={upiId} onChange={e => setUpiId(e.target.value)} placeholder="name@bank" /></label>}
       {selected?.requiredDetails.includes("email") && <label>Email address<input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" /></label>}
       {selected && <div className="payout-summary"><span>You'll receive</span><b>₹{Number(selected.payoutAmount).toLocaleString("en-IN")}</b><span>Required balance</span><b>{Number(selected.requiredAmount).toLocaleString("en-IN")} VEs</b></div>}
-      <button className="primary full" disabled={!selected || busy || (selected.requiredDetails.includes("upiId") && !upiId.trim()) || (selected.requiredDetails.includes("email") && !email.trim())} onClick={() => setConfirm(true)}>Continue</button>
+      <button className="primary full" disabled={!selected || busy || (selected.requiredDetails.includes("upiId") && !upiId.trim()) || (selected.requiredDetails.includes("email") && !email.trim())} onClick={() => { setIdempotencyKey(crypto.randomUUID()); setConfirm(true); }}>Continue</button>
     </section>
     {confirm && <div className="modal-backdrop"><div className="modal"><h2>Confirm withdrawal</h2><p>Redeem ₹{selected?.payoutAmount} for {Number(selected?.requiredAmount).toLocaleString("en-IN")} VEs?</p><p className="muted">The required VEs will be deducted when this request is submitted. Rejected requests are refunded.</p><div className="modal-actions"><button className="ghost" onClick={() => setConfirm(false)}>Cancel</button><button className="primary" disabled={busy} onClick={submit}>{busy ? "Submitting…" : "Confirm withdrawal"}</button></div></div></div>}
   </main>;
