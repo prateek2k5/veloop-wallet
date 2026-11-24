@@ -113,6 +113,7 @@ async function createWithdrawal({ user, optionId, payoutDetails, idempotencyKey 
         status: "PENDING",
         transactionId: transaction.transactionId,
         idempotencyKey,
+        requestHash,
       }], { session });
 
       await AuditLog.create([{
