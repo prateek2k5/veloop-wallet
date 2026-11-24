@@ -6,11 +6,19 @@ function notFound(req, res) {
 }
 
 function errorHandler(error, req, res, next) {
-  const statusCode = error.statusCode || 500;
-  res.status(statusCode).json({
-    success: false,
-    message: statusCode >= 500 ? "Internal server error." : error.message,
-  });
+  let statusCode = error.statusCode || error.status || 500;
+  if (error.name === "ValidationError" || error.name === "CastError") statusCode = 400;
+  if (error.code === 11000) statusCode = 409;
+
+  let message = "Internal server error.";
+  if (statusCode < 500) {
+    if (statusCode === 413) message = "Request payload is too large.";
+    else if (error.code === 11000) message = "A record with these details already exists.";
+    else if (error.name === "ValidationError" || error.name === "CastError") message = "Invalid request data.";
+    else message = error.message || "Invalid request.";
+  }
+
+  res.status(statusCode).json({ success: false, message });
 }
 
 module.exports = { notFound, errorHandler };
