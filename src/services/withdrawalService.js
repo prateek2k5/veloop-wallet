@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { randomUUID } = require("crypto");
+const { randomUUID, createHash } = require("crypto");
 const Withdrawal = require("../models/Withdrawal");
 const Wallet = require("../models/Wallet");
 const WalletTransaction = require("../models/WalletTransaction");
@@ -8,6 +8,11 @@ const AuditLog = require("../models/AuditLog");
 
 function httpError(message, statusCode = 400) {
   return Object.assign(new Error(message), { statusCode });
+}
+
+function stablePayloadHash(optionId, details) {
+  const canonicalDetails = Object.fromEntries(Object.entries(details || {}).sort(([a], [b]) => a.localeCompare(b)));
+  return createHash("sha256").update(JSON.stringify({ optionId, payoutDetails: canonicalDetails })).digest("hex");
 }
 
 function validatePayoutDetails(method, details, requiredDetails) {
@@ -42,8 +47,12 @@ async function createWithdrawal({ user, optionId, payoutDetails, idempotencyKey 
     throw httpError("Your account is not eligible to request a withdrawal.", 403);
   }
 
+  const requestHash = stablePayloadHash(optionId, payoutDetails);
   const existing = await Withdrawal.findOne({ userId: user._id, idempotencyKey });
-  if (existing) return { withdrawal: existing, duplicate: true };
+  if (existing) {
+    if (existing.requestHash !== requestHash) throw httpError("Idempotency key was already used with a different request.", 409);
+    return { withdrawal: existing, duplicate: true };
+  }
 
   const option = await PayoutOption.findOne({ optionId, active: true });
   if (!option) throw httpError("Selected payout option is unavailable.");
@@ -118,7 +127,7 @@ async function createWithdrawal({ user, optionId, payoutDetails, idempotencyKey 
   } catch (error) {
     if (error.code === 11000) {
       const duplicate = await Withdrawal.findOne({ userId: user._id, idempotencyKey });
-      if (duplicate) return { withdrawal: duplicate, duplicate: true };
+      if (duplicate) {\n        if (duplicate.requestHash !== requestHash) throw httpError("Idempotency key was already used with a different request.", 409);\n        return { withdrawal: duplicate, duplicate: true };\n      }
       throw httpError("This withdrawal request has already been submitted.", 409);
     }
     throw error;
