@@ -1,0 +1,77 @@
+{
+  "info": {
+    "_postman_id": "c9b48ed5-0a0a-4b8e-8c0a-veloopwallet",
+    "name": "VELOop Wallet API",
+    "description": "Local development collection for wallet and payout API. Set baseUrl and token variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "token", "value": "" },
+    { "key": "demoPassword", "value": "" },
+    { "key": "optionId", "value": "upi_100" },
+    { "key": "withdrawalId", "value": "" },
+    { "key": "idempotencyKey", "value": "demo-withdrawal-001" },
+    { "key": "upiId", "value": "demo@bank" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"demo2@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": "{{baseUrl}}/api/auth/signup"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "if (body.token) pm.collectionVariables.set('token', body.token);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@veloop.test\",\n  \"password\": \"{{demoPassword}}\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "item": [
+        { "name": "Get Wallet", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/wallet" } },
+        { "name": "Wallet Summary", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/wallet/summary" } },
+        { "name": "Transactions", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/wallet/transactions?page=1&limit=20" } }
+      ]
+    },
+    {
+      "name": "Payout",
+      "item": [
+        { "name": "Payout Methods", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/payout/methods" } },
+        { "name": "UPI Options", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/payout/options/upi" } }
+      ]
+    },
+    {
+      "name": "Withdrawals",
+      "item": [
+        {
+          "name": "Create UPI Withdrawal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"optionId\": \"{{optionId}}\",\n  \"payoutDetails\": { \"upiId\": \"{{upiId}}\" }\n}" },
+            "url": "{{baseUrl}}/api/withdrawals"
+          }
+        },
+        { "name": "List My Withdrawals", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/withdrawals?page=1&limit=20" } }
+      ]
+    }
+  ]
+}

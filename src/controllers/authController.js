@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 // Generate JWT Token
 const generateToken = (userId) => {
+  if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not configured.");
   return jwt.sign(
     { id: userId },
     process.env.JWT_SECRET,
@@ -84,7 +85,6 @@ const signup = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Signup failed",
-      error: error.message
     });
   }
 };
