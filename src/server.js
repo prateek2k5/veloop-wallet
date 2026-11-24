@@ -6,7 +6,7 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-const walletRoutes = require("./routes/walletRoutes");
+const walletRoutes = require("./routes/walletRoutes");\nconst payoutRoutes = require("./routes/payoutRoutes");\nconst withdrawalRoutes = require("./routes/withdrawalRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
@@ -17,7 +17,7 @@ app.use(express.json());
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/wallet", walletRoutes);
+app.use("/api/wallet", walletRoutes);\napp.use("/api/payout", payoutRoutes);\napp.use("/api/withdrawals", withdrawalRoutes);
 
 // Home route
 app.get("/", (req, res) => {
