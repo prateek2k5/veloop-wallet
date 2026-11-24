@@ -1,88 +1,229 @@
-# VELoop Rewards Wallet & Payout System
+# VELOop Rewards Wallet & Payout System
 
-A backend-focused MERN demonstration of a server-authoritative rewards wallet, ledger, payout catalogue, and withdrawal workflow. This is an independent internship task implementation and is not connected to VELoop production systems or credentials.
+A full-stack rewards wallet and payout demonstration built using the MERN stack. The application provides a server-authoritative wallet, transaction ledger, configurable payout catalogue, and withdrawal management workflow.
 
-## Technology
-- Node.js and Express
-- MongoDB and Mongoose
-- JWT authentication
-- React demonstration frontend (Vite) with `/wallet` and `/payout` routes
+**Live Demo:** https://veloop-wallet-taupe.vercel.app/  
+**Backend API:** https://veloop-wallet-api.onrender.com  
+**GitHub Repository:** https://github.com/prateek2k5/veloop-wallet
 
-## Current backend capabilities
-- Signup/login with bcrypt password hashing and JWT.
-- Protected wallet balance, summary and paginated transaction APIs.
-- Wallet currencies: VEs, SVEs, Gems, Tokens and Spins.
-- Ledger-backed credit/debit services.
-- Admin-only wallet credit/debit endpoints.
-- Configurable payout options seeded from backend data.
-- Withdrawal creation with immediate VEs deduction.
-- MongoDB transaction for deduction + ledger + withdrawal + audit record.
-- Idempotency key and unique index for duplicate submission prevention.
-- Admin-only pending withdrawal review; rejection triggers a compensating VEs credit.
-- Account status checks, input validation and basic endpoint rate limiting.
+> This is an independent internship task implementation and is not connected to VELoop production systems or credentials.
 
-## Local setup
+## Tech Stack
 
-1. Clone the repository and enter the backend project folder.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Copy `.env.example` to `.env` and set your own MongoDB Atlas URI, long random JWT secret, and demo password. Never commit `.env`.
-4. Ensure the Atlas database is configured for transactions (replica set).
-5. Seed demo data:
-   ```bash
-   npm run seed:demo
-   ```
-6. Start the API:
-   ```bash
-   npm run dev
-   ```
-7. Open `http://localhost:5000/`.
+**Backend**
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- JWT Authentication
+- bcryptjs
 
-## Demo account
-The seed script creates `demo@veloop.test`. Set its password through `DEMO_USER_PASSWORD` in your local environment. The seed data is for local testing only.
+**Frontend**
+- React 19
+- Vite
+- JavaScript
+- CSS
 
-## Main endpoints
-- `POST /api/auth/signup`
-- `POST /api/auth/login`
-- `GET /api/wallet`
-- `GET /api/wallet/summary`
-- `GET /api/wallet/transactions`
-- `GET /api/payout/methods`
-- `GET /api/payout/options/:method`
-- `POST /api/withdrawals`
-- `GET /api/withdrawals`
-- `GET /api/withdrawals/:withdrawalId`
-- Admin-only: wallet credit/debit and withdrawal review routes.
+**Deployment & Tools**
+- GitHub
+- GitHub Actions (CI)
+- Render (Backend Hosting)
+- Vercel (Frontend Hosting)
+- MongoDB Atlas (Database)
 
-See [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) and [DATABASE_DOCUMENTATION.md](./DATABASE_DOCUMENTATION.md) for full details.
+## Features
 
-## Financial-state decision
-The demonstration deducts VEs immediately when a withdrawal is created. If it is rejected, the system issues a compensating credit and records it in the ledger. External payout execution is intentionally not automated; approval records the review outcome only.
+### Authentication
+- User signup and login.
+- Password hashing using bcrypt.
+- JWT-based authentication.
+- Protected API routes.
 
-## Security notes
-- Wallet ownership always comes from the authenticated JWT.
-- Client-provided payout amounts and required VEs are ignored; the backend reads the active payout option.
-- Admin routes require an authenticated admin role.
-- Sensitive operations are rate-limited.
-- The included rate limiter uses process memory and is only suitable for a single-instance demo. A production multi-instance deployment should use Redis or another shared rate-limit store.
-- Use only your own development database. Never use production credentials.
+### Digital Wallet
+- Server-authoritative wallet balances.
+- Supports five wallet currencies:
+  - VEs
+  - SVEs
+  - Gems
+  - Tokens
+  - Spins
+- Wallet summary and transaction history.
+- Paginated transaction API.
 
-## Tests and verification
-Run `npm test`. The project is being built in milestones; API integration tests and end-to-end frontend verification remain part of the next development pass. Manual test scenarios are listed in [TEST_CASES.md](./TEST_CASES.md).
+### Payout System
+- Configurable payout methods and options.
+- Payout options fetched dynamically from the backend.
+- Withdrawal requests with immediate VEs deduction.
+- Wallet balance validation.
+- Idempotency key to prevent duplicate withdrawal submissions.
 
-## Scaling from 1,000 to 1,000,000 users
-- Keep wallet mutations transactional and use conditional atomic updates.
-- Retain an append-only ledger and periodically reconcile balances against ledger totals.
-- Use idempotency keys with unique indexes for all money-moving requests.
-- Add indexes around user IDs, transaction IDs, withdrawal IDs, status and creation time.
-- Move payout execution and other slow external work to durable queues with retry policies and dead-letter handling.
-- Cache read-only wallet summaries carefully, invalidating them after committed mutations; never use cache as the balance authority.
-- Use distributed rate limiting, fraud/risk checks, device and account signals, and step-up verification for suspicious activity.
-- Keep audit trails immutable and monitor transaction failures, payout latency, queue depth, reconciliation differences and unusual withdrawal patterns.
-- Scale API workers horizontally while keeping all financial writes coordinated through MongoDB transactions or a dedicated ledger service.
-- Add operational reconciliation with payout providers and alert on mismatches.
+### Transaction & Security
+- Ledger-backed credit and debit operations.
+- MongoDB transactions for financial operations.
+- Audit records for withdrawal activities.
+- Admin-only wallet credit/debit and withdrawal review APIs.
+- Rejected withdrawals trigger a compensating VEs credit.
+- Input validation, account status checks and rate limiting.
 
-## Project status
-Backend APIs and the React demonstration frontend are implemented on the `feature/wallet-foundation` branch. CI runs backend JavaScript syntax checks, backend unit tests, and a frontend production build. MongoDB-backed withdrawal/concurrency integration tests, deployment and end-to-end verification against your Atlas database are still pending.
+## Application Screens
+
+- User login.
+- Wallet dashboard with available balances.
+- Recent transaction history.
+- Payout methods and redemption options.
+- Withdrawal request workflow.
+
+## Project Architecture
+
+```text
+veloop-wallet/
+│
+├── src/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── seed/
+│   └── server.js
+│
+├── frontend/
+│   ├── src/
+│   ├── index.html
+│   └── package.json
+│
+├── tests/
+├── postman/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── API_DOCUMENTATION.md
+├── DATABASE_DOCUMENTATION.md
+├── TEST_CASES.md
+├── package.json
+└── README.md
+```
+
+## Local Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/prateek2k5/veloop-wallet.git
+cd veloop-wallet
+```
+
+### 2. Install backend dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Copy `.env.example` to `.env` and configure:
+
+```env
+MONGO_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_long_random_secret
+CORS_ORIGIN=http://localhost:5173
+DEMO_USER_PASSWORD=your_demo_password
+```
+
+Never commit your `.env` file or expose database credentials.
+
+### 4. Seed demo data
+
+```bash
+npm run seed:demo
+```
+
+### 5. Start the backend
+
+```bash
+npm run dev
+```
+
+Backend runs at:
+
+`http://localhost:5000`
+
+### 6. Start the frontend
+
+Open another terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend runs at:
+
+`http://localhost:5173`
+
+## Demo Account
+
+Email: `demo@veloop.test`
+
+Password: Configure through `DEMO_USER_PASSWORD` when seeding the database.
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/signup` | Register user |
+| POST | `/api/auth/login` | User login |
+| GET | `/api/wallet` | Get wallet |
+| GET | `/api/wallet/summary` | Wallet summary |
+| GET | `/api/wallet/transactions` | Transaction history |
+| GET | `/api/payout/methods` | Available payout methods |
+| GET | `/api/payout/options/:method` | Payout options |
+| POST | `/api/withdrawals` | Create withdrawal |
+| GET | `/api/withdrawals` | User withdrawals |
+| GET | `/api/withdrawals/:withdrawalId` | Withdrawal details |
+
+Admin-only endpoints are documented in `API_DOCUMENTATION.md`.
+
+## Testing & Verification
+
+### Automated Testing
+
+**GitHub Actions CI: 4/4 checks passed**
+
+The CI workflow includes:
+
+- Backend JavaScript syntax validation.
+- Backend automated unit tests (`npm test`).
+- Frontend dependency installation.
+- Frontend production build (`npm run build`).
+
+### Deployment Verification
+
+The following manual checks were completed on the deployed application:
+
+- [x] Backend successfully deployed on Render.
+- [x] MongoDB Atlas connection successful.
+- [x] Frontend successfully deployed on Vercel.
+- [x] Live user login verified.
+- [x] Wallet dashboard and balances loaded.
+- [x] Payout methods and options loaded.
+- [x] Withdrawal request successfully created.
+- [x] Wallet balance updated after withdrawal.
+- [x] Withdrawal transaction appeared in wallet history.
+
+### Additional Integration Tests
+
+Database-backed scenarios requiring dedicated test execution include:
+
+- Concurrent withdrawal handling.
+- Duplicate idempotency-key submissions.
+- Insufficient balance handling.
+- Admin rejection and refund workflow.
+- User ownership and authorization checks.
+
+See [TEST_CASES.md](./TEST_CASES.md) for the detailed test plan and verification status.
+
+## Withdrawal & Financial Logic
+
