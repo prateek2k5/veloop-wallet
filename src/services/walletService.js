@@ -67,7 +67,7 @@ async function changeBalance({ userId, currency, amount, type, source, descripti
 
       const balanceBefore = wallet[field];
       if (normalizedType === "DEBIT" && balanceBefore < amount) {
-        throw new Error(`Insufficient ${currency} balance.`);
+        throw Object.assign(new Error(`Insufficient ${currency} balance.`), { statusCode: 400 });
       }
 
       const balanceAfter = normalizedType === "CREDIT"
